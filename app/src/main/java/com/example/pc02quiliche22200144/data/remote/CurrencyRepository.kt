@@ -14,24 +14,11 @@ object CurrencyRepository {
     private val firestore = FirebaseFirestore.getInstance()
     private val conversionsCollection = firestore.collection("conversions")
 
-    val defaultRates = listOf(
-        CurrencyRate("USD", 1.0),
-        CurrencyRate("EUR", 1.08),
-        CurrencyRate("PEN", 0.27),
-        CurrencyRate("GBP", 1.27),
-        CurrencyRate("JPY", 0.0067)
-    )
-
     suspend fun getRates(): List<CurrencyRate> {
-        return try {
-            val response = RetrofitInstance.api.getLatestRates(EXCHANGE_RATE_API_KEY, "USD")
-            val rates = supportedCodes.mapNotNull { code ->
-                val unitsPerUsd = response.conversion_rates[code] ?: return@mapNotNull null
-                CurrencyRate(code = code, usdValue = 1.0 / unitsPerUsd)
-            }
-            rates.ifEmpty { defaultRates }
-        } catch (e: Exception) {
-            defaultRates
+        val response = RetrofitInstance.api.getLatestRates(EXCHANGE_RATE_API_KEY, "USD")
+        return supportedCodes.mapNotNull { code ->
+            val unitsPerUsd = response.conversion_rates[code] ?: return@mapNotNull null
+            CurrencyRate(code = code, usdValue = 1.0 / unitsPerUsd)
         }
     }
 

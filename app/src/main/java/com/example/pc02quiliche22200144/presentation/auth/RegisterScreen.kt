@@ -100,7 +100,7 @@ fun RegisterScreen(navController: NavController) {
                     trimmedName.isBlank() -> "Ingresa tu nombre"
                     trimmedEmail.isBlank() -> "Ingresa tu correo"
                     !Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "El correo no es válido"
-                    password.length < 6 -> "La contraseña debe tener al menos 6 caracteres"
+                    password.isBlank() -> "Ingresa tu contraseña"
                     else -> null
                 }
 

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class ConverterViewModel : ViewModel() {
 
-    private val _rates = MutableStateFlow(CurrencyRepository.defaultRates)
+    private val _rates = MutableStateFlow(emptyList<CurrencyRate>())
     val rates: StateFlow<List<CurrencyRate>> = _rates
 
     private val _isLoading = MutableStateFlow(false)
@@ -32,7 +32,12 @@ class ConverterViewModel : ViewModel() {
     fun loadRates() {
         viewModelScope.launch {
             _isLoading.value = true
-            _rates.value = CurrencyRepository.getRates()
+            try {
+                _rates.value = CurrencyRepository.getRates()
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "No se pudieron obtener las tasas de cambio"
+            }
             _isLoading.value = false
         }
     }
